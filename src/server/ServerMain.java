@@ -1,22 +1,17 @@
 package server;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
+import java.util.Objects;
 
 public class ServerMain {
     public static void main(String[] args) {
         int port = 5000;
-        byte[] buffer = new byte[1024];
-        Server server = new Server(5000);
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
+        Server server = new Server(port);
+        System.out.println("Avvio del server UDP...");
+        while(!server.getMessaggio().equals("stop")) {
+            server.attendi();
+            server.leggi();
+            server.scrivi();
         }
-        catch (IOException e){
-
-        }
-        server.attendi();
-        server.leggi();
-        server.scrivi();
+        System.out.println("Operazione completata.");
     }
 }
