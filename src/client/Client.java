@@ -18,7 +18,7 @@ public class Client {
         this.nome = nome;
     }
 
-    public void connetti() {
+    public void creazione() {
         try {
             this.socket = new DatagramSocket();
             System.out.println("Client pronto.");
