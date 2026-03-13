@@ -4,14 +4,22 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Arrays;
 
+/**
+ * Gestisce un server che resta in ascolto su una porta specifica.
+ */
 public class Server {
 
     private int port;
     private DatagramSocket socket;
     private DatagramPacket lastReceivedPacket;
     String messaggio = "";
+    String ip;
+
+    /**
+     * Crea il server e lo mette in ascolto sulla porta.
+     * @param port Numero della porta.
+     */
     public Server(int port) {
         this.port = port;
         try {
@@ -22,26 +30,49 @@ public class Server {
         }
     }
 
+    /**
+     * Prepara il buffer per ricevere un nuovo pacchetto.
+     */
     public void attendi() {
         byte[] buffer = new byte[1024];
         lastReceivedPacket = new DatagramPacket(buffer, buffer.length);
         System.out.println("In attesa di pacchetti...");
     }
 
+    /**
+     * Riceve il pacchetto e salva IP e messaggio.
+     */
     public void leggi() {
         try {
-            // Il metodo receive è bloccante: il programma si ferma qui finché non arriva qualcosa
             socket.receive(lastReceivedPacket);
-
-            String messaggio = new String(lastReceivedPacket.getData());
-            System.out.println("Ricevuto: " + messaggio);
+            this.ip = lastReceivedPacket.getAddress().getHostAddress();
+            // Nota: ho aggiunto getLength per evitare i caratteri nulli nel messaggio
+            String messaggio = new String(lastReceivedPacket.getData(), 0, lastReceivedPacket.getLength());
+            this.messaggio = messaggio;
         } catch (IOException e) {
             System.err.print("errore nella lettura del messaggio");
         }
     }
+
+    /**
+     * Restituisce l'IP dell'ultimo mittente.
+     * @return Indirizzo IP come stringa.
+     */
+    public String getIp(){
+        return ip;
+    }
+
+    /**
+     * Restituisce l'ultimo messaggio ricevuto.
+     * @return Testo del messaggio.
+     */
     public String getMessaggio(){
         return messaggio;
     }
+
+    /**
+     * Invia una conferma di ricezione al mittente.
+     */
     public void scrivi() {
         try {
             String risposta = "Messaggio ricevuto correttamente";
