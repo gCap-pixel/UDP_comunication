@@ -15,6 +15,7 @@ public class Server {
     private DatagramPacket lastReceivedPacket;
     String messaggio = "";
     String ip;
+    private String x = "";
 
     /**
      * Crea il server e lo mette in ascolto sulla porta.
@@ -46,7 +47,7 @@ public class Server {
         try {
             socket.receive(lastReceivedPacket);
             this.ip = lastReceivedPacket.getAddress().getHostAddress();
-            // Nota: ho aggiunto getLength per evitare i caratteri nulli nel messaggio
+            //ho aggiunto getLength per evitare i caratteri nulli nel messaggio
             String messaggio = new String(lastReceivedPacket.getData(), 0, lastReceivedPacket.getLength());
             this.messaggio = messaggio;
         } catch (IOException e) {
@@ -62,6 +63,13 @@ public class Server {
         return ip;
     }
 
+    public String[] separaMessaggio(){
+        return getMessaggio().split(" - ");
+    }
+
+    public String getNome(){
+        return separaMessaggio()[0];
+    }
     /**
      * Restituisce l'ultimo messaggio ricevuto.
      * @return Testo del messaggio.
@@ -70,13 +78,16 @@ public class Server {
         return messaggio;
     }
 
+    public String getMessaggioSeparato(){
+        return separaMessaggio()[1].trim();
+    }
+
     /**
      * Invia una conferma di ricezione al mittente.
      */
-    public void scrivi() {
+    public void scrivi(String x) {
         try {
-            String risposta = "Messaggio ricevuto correttamente";
-            byte[] bufferRisposta = risposta.getBytes();
+            byte[] bufferRisposta = x.getBytes();
             InetAddress clientAddress = lastReceivedPacket.getAddress();
             int clientPort = lastReceivedPacket.getPort();
             DatagramPacket responsePacket = new DatagramPacket(bufferRisposta, bufferRisposta.length, clientAddress, clientPort);
